@@ -2,6 +2,9 @@ import { CircuitBoard, FileText, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 const SAMPLE_NOTES = [
   { id: 1, title: "Project Ideas", date: "2024-03-10" },
@@ -11,11 +14,37 @@ const SAMPLE_NOTES = [
 
 export const NotesList = () => {
   const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newNoteTitle, setNewNoteTitle] = useState("");
+  const [notes, setNotes] = useState(SAMPLE_NOTES);
 
   const handleNewNote = () => {
+    setIsDialogOpen(true);
+  };
+
+  const createNote = () => {
+    if (!newNoteTitle.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a title for your note",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newNote = {
+      id: notes.length + 1,
+      title: newNoteTitle,
+      date: new Date().toISOString().split('T')[0],
+    };
+
+    setNotes([newNote, ...notes]);
+    setNewNoteTitle("");
+    setIsDialogOpen(false);
+    
     toast({
-      title: "Creating new note",
-      description: "This is just a demo. The create feature will be implemented soon!",
+      title: "Success",
+      description: "New note created successfully!",
     });
   };
 
@@ -33,7 +62,7 @@ export const NotesList = () => {
       
       <ScrollArea className="flex-1">
         <div className="space-y-2">
-          {SAMPLE_NOTES.map((note) => (
+          {notes.map((note) => (
             <div
               key={note.id}
               className="glass p-3 rounded-lg cursor-pointer hover:bg-secondary/40 transition-colors group"
@@ -47,6 +76,34 @@ export const NotesList = () => {
           ))}
         </div>
       </ScrollArea>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Note</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Enter note title..."
+              value={newNoteTitle}
+              onChange={(e) => setNewNoteTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  createNote();
+                }
+              }}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={createNote}>
+              Create Note
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
