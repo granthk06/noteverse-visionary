@@ -1,13 +1,19 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { NotesList } from "@/components/NotesList";
+import { Editor } from "@/components/Editor";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <div className="w-80 border-r border-white/10">
+          <NotesList />
+        </div>
+        <div className="flex-1">
+          <Editor />
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
